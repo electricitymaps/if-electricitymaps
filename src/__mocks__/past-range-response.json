@@ -1,0 +1,25 @@
+{
+  "zone": "DK-DK2",
+  "data": [
+    {
+      "zone": "DK-DK2",
+      "carbonIntensity": 161,
+      "datetime": "2024-03-18T02:00:00.000Z",
+      "updatedAt": "2025-01-16T17:04:54.622Z",
+      "createdAt": "2024-03-15T02:47:12.492Z",
+      "emissionFactorType": "lifecycle",
+      "isEstimated": false,
+      "estimationMethod": null
+    },
+    {
+      "zone": "DK-DK2",
+      "carbonIntensity": 167,
+      "datetime": "2024-03-18T03:00:00.000Z",
+      "updatedAt": "2025-02-08T15:21:12.091Z",
+      "createdAt": "2024-03-15T03:47:04.679Z",
+      "emissionFactorType": "lifecycle",
+      "isEstimated": false,
+      "estimationMethod": null
+    }
+  ]
+}

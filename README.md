@@ -1,92 +1,106 @@
-# if-plugin-template
+# Electricity Maps Carbon Intensity
 
-`if-plugin-template` is an environmental impact calculator template which exposes an API for [IF](https://github.com/Green-Software-Foundation/if) to retrieve energy and embodied carbon estimates.
+Electricity Maps provides historical, real-time, and forecastsed electricity data for more than 150 countries worldwide. Electricity Maps' API is used by leading companies around the world to power carbon-aware decisions. [Read more...](https://www.electricitymaps.com/product-features)
 
-## Implementation
+# Overview
 
-Here can be implementation details of the plugin. For example which API is used, transformations and etc.
+The `ElectricityMapsCarbonIntensity` plugin uses [the Electricity Maps API](https://portal.electricitymaps.com/docs/getting-started#geolocation) to compute the average carbon intensity of electricity consumption for a given time period.
 
-## Usage
+Electricity Maps' carbon intensity calculation follows a peer-reviewed methodology to trace back all electricity flows and calculate the carbon intensity of the electricity grid mix adjusted for electricity imports and exports. This provides the most accurate calculation of emissions from electricity consumption.
 
-To run the `<YOUR-CUSTOM-PLUGIN>`, an instance of `PluginFactory` must be created. Then, the plugin's `execute()` method can be called, passing required arguments to it.
+This plugin can be used to monitor or account for emissions resulting from electricity consumption. The intensity / emissions are aggregated over the duration of the event using hourly data from [the API](https://portal.electricitymaps.com/docs/api#carbon-intensity-past-range).
 
-This is how you could run the plugin in Typescript:
+
+## Prerequisites
+
+This plugin requires a [Commercial API token](https://www.electricitymaps.com/pricing) from Electricity Maps for authentication.
+
+**Environment Variables**: Set the `EMAPS_TOKEN` environment variable to your API token.
+
+```txt
+EMAPS_TOKEN: <your_token>
+```
+
+# Inputs
+
+The plugin requires the following inputs:
+
+* `timestamp`: Timestamp of the recorded event (2021-01-01T00:00:00Z) RFC3339
+* `longitude`: Longitude of the software system connected to a grid (12.5683).
+* `latitude`: Latitude of the software system connected to a grid (55.6761).
+* `duration`: Duration of the recorded event in seconds (e.g. 3600 for one hour). A single event can last at most 10 days, so the maximum value of this parameter is 864000.
+* (optional) `power_consumption`: You can provide the average power consumption in `kWh` for the duration of the event. This will allow the plugin to calulate the total emissions for the event. If this input is not provided, the plugin will calculate the average carbon intensity of the grid for the duration of the event and return the value in units of `gCO2eq`.
+
+# Usage
+
+### In Typescript
+
+Configure the API token environment variable before running the code.
+
+```bash
+export EMAPS_TOKEN=your_token
+```
 
 ```typescript
-async function runPlugin() {
-  const usage = await MyCustomPlugin({}).execute([
-    {
-      timestamp: '2021-01-01T00:00:00Z',
-      duration: '15s',
-      'cpu-util': 34,
-    },
-    {
-      timestamp: '2021-01-01T00:00:15Z',
-      duration: '15s',
-      'cpu-util': 12,
-    },
-  ]);
-
-  console.log(usage);
-}
-
-runPlugin();
+const plugin = ElectricityMapsCarbonIntensity();
+const inputs = [
+  {
+    timestamp: '2024-03-18T01:36:00Z',
+    longitude: 12.5683,
+    latitude: 55.6761,
+    duration: 3600,
+  },
+];
+const outputs = await plugin.execute(inputs);
 ```
 
-## Testing plugin integration
+### Manifest usage
 
->Note: The [If Core](https://github.com/Green-Software-Foundation/if-core) repository contains the `PluginFactory` interface, utility functions, and a set of error classes that can be fully integrated with the IF framework. Detailed information on each error class can be found in the [Errors Reference](../reference/errors.md).
+Configure the API token environment variable before running the code.
 
-### Using local links
+```bash
+export EMAPS_TOKEN=your_token
+```
 
-For using locally developed plugin in `IF Framework` please follow these steps: 
-
-1. On the root level of a locally developed plugin run `npm link`, which will create global package. It uses `package.json` file's `name` field as a package name. Additionally name can be checked by running `npm ls -g --depth=0 --link=true`.
-2. Use the linked plugin in manifest by specifying `name`, `method`, `path` in initialize plugins section. 
+#### Example Input
 
 ```yaml
-name: plugin-demo-link
-description: loads plugin
-tags: null
+name: electricitymaps-demo
+description: example usage of electricitymaps model
+tags:
 initialize:
   plugins:
-    my-custom-plugin:
-      method: MyCustomPlugin
-      path: "<name-field-from-package.json>"
-      config:
-        ...
-...
+    if-electricitymaps:
+      method: ElectricityMapsCarbonIntensity
+      path: 'https://github.com/electricitymaps/if-electricitymaps'
+tree:
+  children:
+    child:
+      pipeline:
+        - electricitymaps
+      inputs:
+        - timestamp: '2024-03-18T01:36:00Z'
+          longitude: 12.5683
+          latitude: 55.6761
+          duration: 3600
+        - timestamp: '2024-03-18T01:36:00Z'
+          longitude: 12.5683
+          latitude: 55.6761
+          duration: 3600
+          power_consumption: 100
 ```
 
-### Using directly from Github
+# Outputs
 
-You can simply push your plugin to the public Github repository and pass the path to it in your manifest.
-For example, for a plugin saved in `github.com/my-repo/my-plugin` you can do the following:
-
-npm install your plugin: 
-
-```
-npm install -g https://github.com/my-repo/my-plugin
-```
-
-Then, in your `manifest`, provide the path in the plugin instantiation. You also need to specify which method the plugin instantiates. In this case you are using the `MyCustomPlugin`.
-
-```yaml
-name: plugin-demo-git
-description: loads plugin
-tags: null
-initialize:
-  plugins:
-    my-custom-plugin:
-      method: MyCustomPlugin
-      path: https://github.com/my-repo/my-plugin
-      config:
-        ...
-...
-```
-
-Now, when you run the `manifest` using the IF CLI, it will load the plugin automatically. Run using:
-
-```sh
-if-run -m <path-to-your-manifest> -o <path-to-save-output>
-```
+The model returns the average carbon intensity of the grid for the duration of the event. If the power consumption is provided, the model will also return the total emissions for the event.
+```json
+[
+  {
+    "carbon_intensity": 0.3,
+    "unit": "kgCO2eq/kWh",
+  },
+  {
+    "carbon_intensity": 0.3,
+    "unit": "kgCO2eq",
+  }
+]
