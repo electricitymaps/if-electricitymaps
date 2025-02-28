@@ -77,7 +77,8 @@ tree:
   children:
     child:
       pipeline:
-        - electricitymaps
+        compute:
+          - if-electricitymaps
       inputs:
         - timestamp: '2024-03-18T01:36:00Z'
           longitude: 12.5683
@@ -93,6 +94,9 @@ tree:
 # Outputs
 
 The model returns the average carbon intensity of the grid for the duration of the event. If the power consumption is provided, the model will also return the total emissions for the event.
+
+In JSON (from Typescript):
+
 ```json
 [
   {
@@ -104,3 +108,23 @@ The model returns the average carbon intensity of the grid for the duration of t
     "unit": "kgCO2eq",
   }
 ]
+```
+
+In YAML (from Manifest):
+
+```yaml
+outputs:
+  - timestamp: '2024-03-18T01:36:00Z'
+    longitude: 12.5683
+    latitude: 55.6761
+    duration: 3600
+    carbonIntensity: 64.4
+    unit: gCO2eq
+  - timestamp: '2024-03-18T01:36:00Z'
+    longitude: 12.5683
+    latitude: 55.6761
+    duration: 3600
+    power_consumption: 100
+    carbonIntensity: 6440.000000000001
+    unit: gCO2eq/kWh
+```
