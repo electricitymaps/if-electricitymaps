@@ -46,6 +46,10 @@
   ],
   "license": "MIT",
   "main": "build/index.js",
+  "files": [
+    "build",
+    "README.md"
+  ],
   "repository": {
     "url": "https://github.com/electricitymaps/if-electricitymaps.git"
   },
