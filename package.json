@@ -51,7 +51,7 @@
   "license": "MIT",
   "main": "build/index.js",
   "repository": {
-    "url": "https://github.com/electricitymaps/if-electricitymaps.git"
+    "url": "git+https://github.com/electricitymaps/if-electricitymaps.git"
   },
   "scripts": {
     "build": "npm run clean && tsc --project tsconfig.build.json",
