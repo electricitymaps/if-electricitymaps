@@ -36,6 +36,10 @@
     "node": ">=18",
     "npm": ">=8"
   },
+  "files": [
+    "build",
+    "README.md"
+  ],
   "homepage": "https://www.electricitymaps.com",
   "keywords": [
     "green software foundation",
