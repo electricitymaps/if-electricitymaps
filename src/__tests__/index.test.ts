@@ -63,11 +63,30 @@ describe('lib/electricitymaps: ', () => {
         }
       });
 
-      it('throws an error given invalid inputs', async () => {
+      it('throws an error given input without latitude, longitude, and zone', async () => {
         process.env.EMAPS_TOKEN = 'good_token';
 
         const errorMessage =
-          "ElectricityMapsCarbonIntensity(input): The 'longitude' field is required.";
+          "ElectricityMapsCarbonIntensity(input): Either the 'zone' field OR both 'longitude' and 'latitude' fields must be provided.";
+        const plugin = ElectricityMapsCarbonIntensity();
+        try {
+          await plugin.execute([
+            {
+              timestamp: '2024-03-18T01:36:00Z',
+              duration: 3600,
+            },
+          ]);
+        } catch (error) {
+          expect(error).toBeInstanceOf(InputValidationError);
+          expect(error).toEqual(new InputValidationError(errorMessage));
+        }
+      });
+
+      it('throws an error given input with latitude but not longitude', async () => {
+        process.env.EMAPS_TOKEN = 'good_token';
+
+        const errorMessage =
+          "ElectricityMapsCarbonIntensity(input): The 'longitude' field is required if 'latitude' is provided.";
         const plugin = ElectricityMapsCarbonIntensity();
         try {
           await plugin.execute([
@@ -83,7 +102,27 @@ describe('lib/electricitymaps: ', () => {
         }
       });
 
-      it('returns a result given valid inputs and API token', async () => {
+      it('throws an error given input with longitude but not latitude', async () => {
+        process.env.EMAPS_TOKEN = 'good_token';
+
+        const errorMessage =
+          "ElectricityMapsCarbonIntensity(input): The 'latitude' field is required if 'longitude' is provided.";
+        const plugin = ElectricityMapsCarbonIntensity();
+        try {
+          await plugin.execute([
+            {
+              timestamp: '2024-03-18T01:36:00Z',
+              longitude: 12.5683,
+              duration: 3600,
+            },
+          ]);
+        } catch (error) {
+          expect(error).toBeInstanceOf(InputValidationError);
+          expect(error).toEqual(new InputValidationError(errorMessage));
+        }
+      });
+
+      it('returns a result given valid long and lat inputs and API token', async () => {
         process.env.EMAPS_TOKEN = 'good_token';
 
         const plugin = ElectricityMapsCarbonIntensity();
@@ -102,6 +141,29 @@ describe('lib/electricitymaps: ', () => {
             duration: 7200,
             latitude: 55.6761,
             longitude: 12.5683,
+            timestamp: '2024-03-18T01:36:00Z',
+            unit: 'gCO2eq',
+          },
+        ]);
+      });
+
+      it('returns a result given valid zone inputs and API token', async () => {
+        process.env.EMAPS_TOKEN = 'good_token';
+
+        const plugin = ElectricityMapsCarbonIntensity();
+        const result = await plugin.execute([
+          {
+            timestamp: '2024-03-18T01:36:00Z',
+            zone: 'PJM',
+            duration: 7200,
+          },
+        ]);
+
+        expect(result).toStrictEqual([
+          {
+            carbonIntensity: 331.6,
+            duration: 7200,
+            zone: 'PJM',
             timestamp: '2024-03-18T01:36:00Z',
             unit: 'gCO2eq',
           },

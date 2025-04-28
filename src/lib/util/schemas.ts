@@ -56,22 +56,6 @@ export const inputSchema = z
   })
   .refine(
     data => {
-      // Either zone is provided OR both latitude and longitude are provided
-      return (
-        (data.zone !== undefined &&
-          data.latitude === undefined &&
-          data.longitude === undefined) ||
-        (data.zone === undefined &&
-          data.latitude !== undefined &&
-          data.longitude !== undefined)
-      );
-    },
-    {
-      message: "The 'longitude' field is required if 'latitude' is provided",
-    }
-  )
-  .refine(
-    data => {
       // If latitude is provided, longitude must also be provided
       if (data.latitude !== undefined) {
         return data.longitude !== undefined;
@@ -92,5 +76,22 @@ export const inputSchema = z
     },
     {
       message: "The 'latitude' field is required if 'longitude' is provided",
+    }
+  )
+  .refine(
+    data => {
+      // Either zone is provided OR both latitude and longitude are provided
+      return (
+        (data.zone !== undefined &&
+          data.latitude === undefined &&
+          data.longitude === undefined) ||
+        (data.zone === undefined &&
+          data.latitude !== undefined &&
+          data.longitude !== undefined)
+      );
+    },
+    {
+      message:
+        "Either the 'zone' field OR both 'longitude' and 'latitude' fields must be provided",
     }
   );
