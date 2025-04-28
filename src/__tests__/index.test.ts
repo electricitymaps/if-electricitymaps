@@ -130,7 +130,7 @@ describe('lib/electricitymaps: ', () => {
           {
             timestamp: '2024-03-18T01:36:00Z',
             longitude: 12.5683,
-            latitude: 55.6761,
+            latitude: 55.6762,
             duration: 7200,
           },
         ]);
@@ -139,7 +139,7 @@ describe('lib/electricitymaps: ', () => {
           {
             carbonIntensity: 331.6,
             duration: 7200,
-            latitude: 55.6761,
+            latitude: 55.6762,
             longitude: 12.5683,
             timestamp: '2024-03-18T01:36:00Z',
             unit: 'gCO2eq',
