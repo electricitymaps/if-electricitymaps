@@ -36,6 +36,10 @@
     "node": ">=18",
     "npm": ">=8"
   },
+  "files": [
+    "build",
+    "README.md"
+  ],
   "homepage": "https://www.electricitymaps.com",
   "keywords": [
     "green software foundation",
@@ -46,10 +50,6 @@
   ],
   "license": "MIT",
   "main": "build/index.js",
-  "files": [
-    "build",
-    "README.md"
-  ],
   "repository": {
     "url": "https://github.com/electricitymaps/if-electricitymaps.git"
   },
