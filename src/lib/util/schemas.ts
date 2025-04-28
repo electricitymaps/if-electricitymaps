@@ -27,7 +27,8 @@ export const inputSchema = z
       })
       .refine(val => !isNaN(val), {
         message: "The 'latitude' field must be a number",
-      }),
+      })
+      .optional(),
     longitude: z
       .number({
         required_error: "The 'longitude' field is required",
@@ -35,7 +36,13 @@ export const inputSchema = z
       })
       .refine(val => !isNaN(val), {
         message: "The 'longitude' field must be a number",
-      }),
+      })
+      .optional(),
+    zone: z
+      .string({
+        invalid_type_error: "The 'zone' field must be a string",
+      })
+      .optional(),
   })
   .refine(data => {
     const start = dayjs(data.timestamp);
@@ -46,4 +53,44 @@ export const inputSchema = z
         message: 'The maximum duration is 10 days for the Electricity Maps API',
       }
     );
-  });
+  })
+  .refine(
+    data => {
+      // Either zone is provided OR both latitude and longitude are provided
+      return (
+        (data.zone !== undefined &&
+          data.latitude === undefined &&
+          data.longitude === undefined) ||
+        (data.zone === undefined &&
+          data.latitude !== undefined &&
+          data.longitude !== undefined)
+      );
+    },
+    {
+      message: "The 'longitude' field is required if 'latitude' is provided",
+    }
+  )
+  .refine(
+    data => {
+      // If latitude is provided, longitude must also be provided
+      if (data.latitude !== undefined) {
+        return data.longitude !== undefined;
+      }
+      return true;
+    },
+    {
+      message: "The 'longitude' field is required if 'latitude' is provided",
+    }
+  )
+  .refine(
+    data => {
+      // If longitude is provided, latitude must also be provided
+      if (data.longitude !== undefined) {
+        return data.latitude !== undefined;
+      }
+      return true;
+    },
+    {
+      message: "The 'latitude' field is required if 'longitude' is provided",
+    }
+  );

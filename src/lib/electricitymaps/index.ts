@@ -61,12 +61,20 @@ export const ElectricityMapsCarbonIntensity = (): PluginInterface => {
       const start = dayjs(input.timestamp);
       const end = start.add(input.duration, 'second');
 
-      const carbonIntensities = api.getCarbonIntensity({
-        lon: input.longitude,
-        lat: input.latitude,
-        start: start.toISOString(),
-        end: end.toISOString(),
-      });
+      const carbonIntensityParams = input.zone
+        ? {
+            zone: input.zone,
+            start: start.toISOString(),
+            end: end.toISOString(),
+          }
+        : {
+            lon: input.longitude,
+            lat: input.latitude,
+            start: start.toISOString(),
+            end: end.toISOString(),
+          };
+
+      const carbonIntensities = api.getCarbonIntensity(carbonIntensityParams);
 
       const numHours = Math.floor(input.duration / 3600);
       const blocks = [...Array(numHours).keys()];
