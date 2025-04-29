@@ -1,7 +1,7 @@
 {
   "name": "if-electricitymaps",
   "description": "Electricity Maps plugin for Impact Framework.",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "author": {
     "name": "Electricity Maps",
     "email": "avo@electricitymaps.com"
