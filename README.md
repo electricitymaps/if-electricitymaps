@@ -26,8 +26,9 @@ EMAPS_TOKEN: <your_token>
 The plugin requires the following inputs:
 
 * `timestamp`: Timestamp of the recorded event (2021-01-01T00:00:00Z) RFC3339
-* `longitude`: Longitude of the software system connected to a grid (12.5683).
-* `latitude`: Latitude of the software system connected to a grid (55.6761).
+* `longitude`: Longitude of the software system connected to a grid (12.5683). Required if `zone` is not provided.
+* `latitude`: Latitude of the software system connected to a grid (55.6761). Required if `zone` is not provided.
+* `zone`: Zone identifier of the grid (e.g. `PJM`). Required if `latitude` and `longitude` are not provided.
 * `duration`: Duration of the recorded event in seconds (e.g. 3600 for one hour). A single event can last at most 10 days, so the maximum value of this parameter is 864000.
 * (optional) `power_consumption`: You can provide the average power consumption in `kWh` for the duration of the event. This will allow the plugin to calulate the total emissions for the event. If this input is not provided, the plugin will calculate the average carbon intensity of the grid for the duration of the event and return the value in units of `gCO2eq`.
 
